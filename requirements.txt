@@ -1,0 +1,8 @@
+# Needed only for live search (/api/live/*) — the snapshot gallery itself
+# needs nothing beyond Python 3's standard library.
+# Pinned to the versions this project was built and verified against live
+# (see live/realtor_adapter.py's module docstring for why the exact
+# HomeHarvest version matters: it has a documented pagination bug this
+# project works around at a specific known version's behavior).
+homeharvest==0.8.18
+requests==2.34.2

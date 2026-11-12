@@ -1,0 +1,17 @@
+const assert=require('node:assert/strict');
+const vm=require('node:vm'),fs=require('node:fs'),path=require('node:path'); const context={};vm.createContext(context);vm.runInContext(fs.readFileSync(path.join(__dirname,'../dist/filter-engine.js'),'utf8'),context);const E=context.FilterEngine;
+const rule=(field,op,value,mode='require',allowUnknown=false)=>({field,op,value,mode,allowUnknown});
+const record={fields:{tags:['pool','gym'],pets:['No'],fee:[75]},offers:[{'Offer / beds':[2],'Offer / rent':[1500]},{'Offer / beds':[3],'Offer / rent':[2100]}]};
+assert(E.evaluate(record,[rule('tags','equals','pool')]).match);
+assert(!E.evaluate(record,[rule('tags','equals','pool','exclude')]).match);
+assert(!E.evaluate(record,[rule('laundry','equals','Yes','exclude')]).match);
+assert(E.evaluate(record,[rule('laundry','equals','Yes','exclude',true)]).match);
+assert(E.evaluate(record,[rule('laundry','unknown','')]).match);
+assert(!E.evaluate(record,[rule('laundry','known','')]).match);
+assert(E.evaluate(record,[rule('fee','lte','100')]).match);
+assert(!E.evaluate(record,[rule('fee','lte','50')]).match);
+assert(!E.evaluate(record,[rule('Offer / beds','equals','3'),rule('Offer / rent','lte','1800')]).match);
+assert(E.evaluate(record,[rule('tags','equals','pool','prefer')]).score===1);
+assert(E.test(['2026-11-12'],rule('date','after','2026-11-01')));
+assert(!E.test(['unknown'],rule('date','before','2026-11-01')));
+console.log('12 filter-engine assertions passed');

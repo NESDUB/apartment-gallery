@@ -1,0 +1,59 @@
+{
+  "version": 2,
+  "name": "Laundry and flexible pet mentions",
+  "query": {
+    "location": "33844",
+    "radiusMiles": 20,
+    "minRent": 0,
+    "maxRent": 2300,
+    "minBeds": 2,
+    "maxBeds": 3,
+    "propertyTypes": [],
+    "text": "",
+    "sort": "price"
+  },
+  "rules": [
+    {
+      "field": "description",
+      "op": "mentions",
+      "mode": "prefer",
+      "allowUnknown": true,
+      "weight": 3,
+      "terms": [
+        "in-unit laundry",
+        "washer and dryer included",
+        "washer/dryer included"
+      ],
+      "excludeTerms": [
+        "washer and dryer not included",
+        "hookups only"
+      ],
+      "match": "any",
+      "caseSensitive": false,
+      "wholeWord": true,
+      "ignoreNegated": true,
+      "negationWindow": 3
+    },
+    {
+      "field": "description",
+      "op": "mentions",
+      "mode": "prefer",
+      "allowUnknown": true,
+      "weight": 1,
+      "terms": [
+        "pet friendly",
+        "pets welcome",
+        "dogs allowed"
+      ],
+      "excludeTerms": [
+        "no pets",
+        "pets not allowed"
+      ],
+      "match": "any",
+      "caseSensitive": false,
+      "wholeWord": true,
+      "ignoreNegated": true,
+      "negationWindow": 3
+    }
+  ]
+}

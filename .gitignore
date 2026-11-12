@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Scratch output from live/live_verify*.py — real data from whenever it
+# was last run, not something that belongs in version control.
+live/live_verify_results.json
+live/live_verify_session_results.json

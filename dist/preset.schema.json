@@ -1,0 +1,230 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Nearby preset v2",
+  "description": "Runtime additionally validates field existence, nonblank values, numeric/date operands and ordered query bounds. No scripts or regex are executed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "name",
+    "query",
+    "rules"
+  ],
+  "properties": {
+    "version": {
+      "const": 2
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "query": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "location",
+        "radiusMiles",
+        "minRent",
+        "maxRent",
+        "minBeds",
+        "maxBeds",
+        "propertyTypes",
+        "text",
+        "sort"
+      ],
+      "properties": {
+        "location": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "radiusMiles": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "minRent": {
+          "type": "number",
+          "minimum": 0
+        },
+        "maxRent": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "minBeds": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxBeds": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "propertyTypes": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "sort": {
+          "enum": [
+            "distance",
+            "price",
+            "space",
+            "photos"
+          ]
+        }
+      }
+    },
+    "rules": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "field",
+          "op",
+          "mode",
+          "allowUnknown"
+        ],
+        "properties": {
+          "field": {
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "contains",
+              "equals",
+              "gte",
+              "lte",
+              "before",
+              "after",
+              "known",
+              "unknown",
+              "mentions"
+            ]
+          },
+          "value": {
+            "type": [
+              "string",
+              "number",
+              "boolean"
+            ]
+          },
+          "mode": {
+            "enum": [
+              "require",
+              "exclude",
+              "prefer"
+            ]
+          },
+          "allowUnknown": {
+            "type": "boolean"
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "terms": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "minItems": 1
+          },
+          "excludeTerms": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "match": {
+            "enum": [
+              "any",
+              "all"
+            ]
+          },
+          "caseSensitive": {
+            "type": "boolean"
+          },
+          "wholeWord": {
+            "type": "boolean"
+          },
+          "ignoreNegated": {
+            "type": "boolean"
+          },
+          "negationWindow": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 12
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "op": {
+                  "const": "mentions"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "terms",
+                "match",
+                "caseSensitive",
+                "wholeWord",
+                "ignoreNegated",
+                "negationWindow"
+              ],
+              "properties": {
+                "field": {
+                  "const": "description"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "op": {
+                  "not": {
+                    "enum": [
+                      "known",
+                      "unknown",
+                      "mentions"
+                    ]
+                  }
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "value"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}
